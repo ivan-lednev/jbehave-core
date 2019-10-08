@@ -161,6 +161,7 @@ public class ExamplesTable {
     private static final String EMPTY_VALUE = "";
 
     public static final Pattern INLINED_PROPERTIES_PATTERN = Pattern.compile("\\{(.*?[^\\\\])\\}\\s*(.*)", DOTALL);
+//    public static final Pattern INLINED_PROPERTIES_PATTERN = Pattern.compile("\\{(.*?[^\\\\])(\\$\\{.+?\\})?\\}\\s*(.*)", DOTALL);
     public static final ExamplesTable EMPTY = new ExamplesTable("");
 
     private static final String ROW_SEPARATOR_PATTERN = "\r?\n";
@@ -216,14 +217,17 @@ public class ExamplesTable {
     }
 
     private String stripProperties(String headerSeparator, String valueSeparator, String ignorableSeparator) {
-        String  tableWithoutProperties = tableAsString.trim();
+        String tableWithoutProperties = tableAsString.trim();
         Matcher matcher = INLINED_PROPERTIES_PATTERN.matcher(tableWithoutProperties);
         while (matcher.matches()) {
             String propertiesAsString = matcher.group(1);
             propertiesAsString = StringUtils.replace(propertiesAsString, "\\{", "{");
             propertiesAsString = StringUtils.replace(propertiesAsString, "\\}", "}");
+            
+            // factory goes here
             propertiesList.add(new ExamplesTableProperties(propertiesAsString, headerSeparator,
                     valueSeparator, ignorableSeparator));
+            
             tableWithoutProperties = matcher.group(2).trim();
             matcher = INLINED_PROPERTIES_PATTERN.matcher(tableWithoutProperties);
         }
