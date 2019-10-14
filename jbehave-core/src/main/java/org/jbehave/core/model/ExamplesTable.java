@@ -20,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.jbehave.core.annotations.Parameter;
+import org.jbehave.core.configuration.ExamplesTablePropertiesFactory;
 import org.jbehave.core.io.LoadFromClasspath;
 import org.jbehave.core.model.TableTransformers.TableTransformer;
 import org.jbehave.core.steps.ChainedRow;
@@ -160,7 +161,8 @@ public class ExamplesTable {
     private static final Map<String, String> EMPTY_MAP = Collections.emptyMap();
     private static final String EMPTY_VALUE = "";
 
-    public static final Pattern INLINED_PROPERTIES_PATTERN = Pattern.compile("\\{(.*?[^\\\\])\\}\\s*(.*)", DOTALL);
+//    public static final Pattern INLINED_PROPERTIES_PATTERN = Pattern.compile("\\{(.*?[^\\\\])\\}\\s*(.*)", DOTALL);
+    public static final Pattern INLINED_PROPERTIES_PATTERN = Pattern.compile("\\{(.*[^\\\\])\\}\\s*(.*)", DOTALL);
     public static final ExamplesTable EMPTY = new ExamplesTable("");
 
     private static final String ROW_SEPARATOR_PATTERN = "\r?\n";
@@ -192,6 +194,13 @@ public class ExamplesTable {
                 parameterControls, tableTransformers);
     }
 
+//    public ExamplesTable(String tableAsString, String headerSeparator, String valueSeparator,
+//            String ignorableSeparator, ParameterConverters parameterConverters, ParameterControls parameterControls,
+//            TableTransformers tableTransformers) {
+//        this(tableAsString, headerSeparator, valueSeparator, ignorableSeparator, parameterConverters, parameterControls,
+//                tableTransformers, new ExamplesTablePropertiesFactory());
+//    }
+    
     public ExamplesTable(String tableAsString, String headerSeparator, String valueSeparator,
             String ignorableSeparator, ParameterConverters parameterConverters, ParameterControls parameterControls,
             TableTransformers tableTransformers) {
@@ -200,7 +209,8 @@ public class ExamplesTable {
         this.parameterControls = parameterControls;
         this.tableTransformers = tableTransformers;
         this.defaults = new ConvertedParameters(EMPTY_MAP, parameterConverters);
-        String tableWithoutProperties = stripProperties(headerSeparator, valueSeparator, ignorableSeparator);
+        String tableWithoutProperties = stripProperties(headerSeparator, valueSeparator, ignorableSeparator,
+        		new ExamplesTablePropertiesFactory(parameterConverters));
         String transformedTable = applyTransformers(tableWithoutProperties);
         parseByRows(transformedTable);
     }
@@ -215,20 +225,22 @@ public class ExamplesTable {
         this.defaults = defaults;
     }
 
-    private String stripProperties(String headerSeparator, String valueSeparator, String ignorableSeparator) {
+    private String stripProperties(String headerSeparator, String valueSeparator, String ignorableSeparator, 
+    		ExamplesTablePropertiesFactory examplesTablePropertiesFactory) {
         String  tableWithoutProperties = tableAsString.trim();
         Matcher matcher = INLINED_PROPERTIES_PATTERN.matcher(tableWithoutProperties);
         while (matcher.matches()) {
             String propertiesAsString = matcher.group(1);
             propertiesAsString = StringUtils.replace(propertiesAsString, "\\{", "{");
             propertiesAsString = StringUtils.replace(propertiesAsString, "\\}", "}");
-            propertiesList.add(new ExamplesTableProperties(propertiesAsString, headerSeparator,
-                    valueSeparator, ignorableSeparator));
+            propertiesList.add(examplesTablePropertiesFactory.createExamplesTableProperties(propertiesAsString,
+            		headerSeparator, valueSeparator, ignorableSeparator));
             tableWithoutProperties = matcher.group(2).trim();
             matcher = INLINED_PROPERTIES_PATTERN.matcher(tableWithoutProperties);
         }
         if (propertiesList.isEmpty()) {
-            propertiesList.add(new ExamplesTableProperties("", headerSeparator, valueSeparator, ignorableSeparator));
+            propertiesList.add(examplesTablePropertiesFactory.createExamplesTableProperties("",
+            		headerSeparator, valueSeparator, ignorableSeparator));
         }
         return tableWithoutProperties;
     }

@@ -55,6 +55,7 @@ public class RegexStoryParser extends AbstractRegexParser implements StoryParser
     }
 
     public RegexStoryParser(Keywords keywords, ResourceLoader resourceLoader, TableTransformers tableTransformers) {
+//        this(keywords, new ExamplesTableFactory(keywords, resourceLoader, tableTransformers));
         this(keywords, new ExamplesTableFactory(keywords, resourceLoader, tableTransformers));
     }
 

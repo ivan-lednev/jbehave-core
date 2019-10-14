@@ -47,25 +47,26 @@ public final class ExamplesTableProperties {
         propertiesAsString = propertiesAsStringBuilder.substring(0, propertiesAsStringBuilder.length() - 1);
     }
 
-    public ExamplesTableProperties(String propertiesAsString, String defaultHeaderSeparator, String defaultValueSeparator,
-            String defaultIgnorableSeparator) {
+    public ExamplesTableProperties(Map<String, String> propertiesMap, String propertiesAsString,
+    		String defaultHeaderSeparator, String defaultValueSeparator, String defaultIgnorableSeparator) {
         properties.setProperty(HEADER_SEPARATOR_KEY, defaultHeaderSeparator);
         properties.setProperty(VALUE_SEPARATOR_KEY, defaultValueSeparator);
         properties.setProperty(IGNORABLE_SEPARATOR_KEY, defaultIgnorableSeparator);
-        properties.putAll(parseProperties(propertiesAsString));
+        properties.putAll(propertiesMap);
         this.propertiesAsString = propertiesAsString;
     }
 
-    private Map<String, String> parseProperties(String propertiesAsString) {
-        Map<String, String> result = new LinkedHashMap<>();
-        if (!isEmpty(propertiesAsString)) {
-            for (String propertyAsString : propertiesAsString.split("(?<!\\\\),")) {
-                String[] property = StringUtils.split(propertyAsString, "=", 2);
-                result.put(property[0].trim(), StringUtils.replace(property[1], "\\,", ",").trim());
-             }
-        }
-        return result;
-    }
+    // Move to the factory
+//    private Map<String, String> parseProperties(String propertiesAsString) {
+//        Map<String, String> result = new LinkedHashMap<>();
+//        if (!isEmpty(propertiesAsString)) {
+//            for (String propertyAsString : propertiesAsString.split("(?<!\\\\),")) {
+//                String[] property = StringUtils.split(propertyAsString, "=", 2);
+//                result.put(property[0].trim(), StringUtils.replace(property[1], "\\,", ",").trim());
+//             }
+//        }
+//        return result;
+//    }
 
     public String getRowSeparator() {
         return ROW_SEPARATOR;

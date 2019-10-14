@@ -196,6 +196,8 @@ public abstract class Configuration {
      * The examples table factory
      */
     protected ExamplesTableFactory examplesTableFactory;
+    
+    protected ExamplesTablePropertiesFactory examplesTablePropertiesFactory;
 
     /**
      * Enables parallelization of story level examples
@@ -225,7 +227,8 @@ public abstract class Configuration {
 
     public StoryParser storyParser() {
         if (storyParser == null) {
-            storyParser = new RegexStoryParser(storyLoader(), tableTransformers());
+//            storyParser = new RegexStoryParser(storyLoader(), tableTransformers());
+            storyParser = new RegexStoryParser(this);
         }
         return storyParser;
     }
@@ -250,6 +253,13 @@ public abstract class Configuration {
                     parameterControls(), tableTransformers());
         }
         return examplesTableFactory;
+    }
+
+    public ExamplesTablePropertiesFactory examplesTablePropertiesFactory() {
+        if (examplesTablePropertiesFactory == null) {
+            examplesTablePropertiesFactory = new ExamplesTablePropertiesFactory(parameterConverters());
+        }
+        return examplesTablePropertiesFactory;
     }
 
     public StoryPathResolver storyPathResolver() {
@@ -429,9 +439,15 @@ public abstract class Configuration {
     }
 
     public Configuration useExamplesTableFactory(ExamplesTableFactory examplesTableFactory) {
-        this.examplesTableFactory = examplesTableFactory;
-        return this;
+    	this.examplesTableFactory = examplesTableFactory;
+    	return this;
     }
+    
+    public Configuration useExamplesTablePropertiesFactory(ExamplesTablePropertiesFactory
+    		examplesTablePropertiesFactory) {
+    	this.examplesTablePropertiesFactory = examplesTablePropertiesFactory;
+    	return this;
+    }    
 
     public Configuration useStoryPathResolver(StoryPathResolver storyPathResolver) {
         this.storyPathResolver = storyPathResolver;

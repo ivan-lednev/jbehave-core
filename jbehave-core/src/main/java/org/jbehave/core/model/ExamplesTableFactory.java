@@ -1,6 +1,7 @@
 package org.jbehave.core.model;
 
 import org.jbehave.core.configuration.Configuration;
+import org.jbehave.core.configuration.ExamplesTablePropertiesFactory;
 import org.jbehave.core.configuration.Keywords;
 import org.jbehave.core.i18n.LocalizedKeywords;
 import org.jbehave.core.io.ResourceLoader;
@@ -35,6 +36,7 @@ public class ExamplesTableFactory {
     private final ParameterConverters parameterConverters;
     private final ParameterControls parameterControls;
     private final TableTransformers tableTransformers;
+    private final ExamplesTablePropertiesFactory examplesTablePropertiesFactory;
 
     public ExamplesTableFactory(ResourceLoader resourceLoader, TableTransformers tableTransformers) {
         this(new LocalizedKeywords(), resourceLoader, tableTransformers);
@@ -49,7 +51,7 @@ public class ExamplesTableFactory {
             ParameterControls parameterControls, TableTransformers tableTransformers) {
         this(new LocalizedKeywords(), resourceLoader, parameterConverters, parameterControls, tableTransformers);
     }
-
+    
     public ExamplesTableFactory(Keywords keywords, ResourceLoader resourceLoader,
             ParameterConverters parameterConverters, ParameterControls parameterControls,
             TableTransformers tableTransformers) {
@@ -58,6 +60,7 @@ public class ExamplesTableFactory {
         this.parameterConverters = parameterConverters;
         this.parameterControls = parameterControls;
         this.tableTransformers = tableTransformers;
+        this.examplesTablePropertiesFactory = new ExamplesTablePropertiesFactory(parameterConverters);
     }
     
     public ExamplesTableFactory(Configuration configuration) {
@@ -66,6 +69,7 @@ public class ExamplesTableFactory {
         this.parameterConverters = configuration.parameterConverters();
         this.parameterControls = configuration.parameterControls();
         this.tableTransformers = configuration.tableTransformers();
+        this.examplesTablePropertiesFactory = configuration.examplesTablePropertiesFactory();
     }
 
     public ExamplesTable createExamplesTable(String input) {
