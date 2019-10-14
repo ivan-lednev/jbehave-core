@@ -196,6 +196,11 @@ public abstract class Configuration {
      * The examples table factory
      */
     protected ExamplesTableFactory examplesTableFactory;
+    
+    /**
+     * The examples table properties factory
+     */
+    protected ExamplesTablePropertiesFactory examplesTablePropertiesFactory;
 
     /**
      * Enables parallelization of story level examples
@@ -250,6 +255,13 @@ public abstract class Configuration {
                     parameterControls(), tableTransformers());
         }
         return examplesTableFactory;
+    }
+
+    public ExamplesTablePropertiesFactory examplesTablePropertiesFactory() {
+        if (examplesTablePropertiesFactory == null) {
+            examplesTablePropertiesFactory = new ExamplesTablePropertiesFactory(parameterConverters());
+        }
+        return examplesTablePropertiesFactory;
     }
 
     public StoryPathResolver storyPathResolver() {
@@ -432,6 +444,12 @@ public abstract class Configuration {
         this.examplesTableFactory = examplesTableFactory;
         return this;
     }
+    
+    public Configuration useExamplesTablePropertiesFactory(ExamplesTablePropertiesFactory
+    		examplesTablePropertiesFactory) {
+    	this.examplesTablePropertiesFactory = examplesTablePropertiesFactory;
+    	return this;
+    }    
 
     public Configuration useStoryPathResolver(StoryPathResolver storyPathResolver) {
         this.storyPathResolver = storyPathResolver;
